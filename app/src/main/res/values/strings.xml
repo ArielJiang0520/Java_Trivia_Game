@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Lab5_ics45J</string>
     <string name="title">QUIZ SURVIVAL</string>
+    <string name="startButton">START</string>
+    <string name="highestScore">HIGHEST SCORE:</string>
+    <string name="defaultScore">0</string>
 </resources>
