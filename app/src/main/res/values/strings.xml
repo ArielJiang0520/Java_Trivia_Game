@@ -4,5 +4,12 @@
     <string name="startButton">START</string>
     <string name="highestScore">HIGHEST SCORE:</string>
     <string name="defaultScore">0</string>
-    <string name="question">default question text: Penguins are mammals, answer with true or false</string>
+    <string name="question">Are whales are mamals?</string>
+    <string name="question_choice_1">True</string>
+    <string name="question_choice_2">False</string>
+    <string name="current_score">0</string>
+    <string name="score_text">Score</string>
+    <string name="first_life">firstLife</string>
+    <string name="second_life">secondLife</string>
+    <string name="third_life">thirdLife</string>
 </resources>
