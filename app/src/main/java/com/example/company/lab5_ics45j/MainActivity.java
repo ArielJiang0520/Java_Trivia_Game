@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("message");
 
-        myRef.setValue("Hello, World!");
+        myRef.setValue("Hello, World0!");
 
         Toast.makeText(this, "hello successfully added.", Toast.LENGTH_LONG).show();
     }
