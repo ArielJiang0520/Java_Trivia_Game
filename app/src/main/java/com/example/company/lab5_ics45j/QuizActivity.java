@@ -1,6 +1,8 @@
 package com.example.company.lab5_ics45j;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +33,7 @@ public class QuizActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
@@ -41,23 +45,52 @@ public class QuizActivity extends AppCompatActivity {
         final Button button1 = findViewById(R.id.choice1);
         button1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                Handler mHandler = new Handler();
                 checkAnswer("choice1");//Temporary for testing purposes, should call checkAnswer() instead
+                mHandler.postDelayed(new Runnable() {
+                    public void run() {
+                        Button rightAnswerView = (Button) findViewById( R.id.choice1);
+                        Log.d(TAG, "This should show up after 5 sec");
+                        rightAnswerView.setBackgroundColor(Color.WHITE);
+                        //rightAnswerView.setBackgroundColor(Color.WHITE);;
+                    }
+                }, 50);
             }
         });
 
         final Button button2 = findViewById(R.id.choice2);
         button2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                Handler mHandler = new Handler();
                 checkAnswer("choice2");
+                mHandler.postDelayed(new Runnable() {
+                    public void run() {
+                        Button rightAnswerView = (Button) findViewById( R.id.choice2);
+                        Log.d(TAG, "This should show up after 5 sec");
+                        rightAnswerView.setBackgroundColor(Color.WHITE);
+                        //rightAnswerView.setBackgroundColor(Color.WHITE);;
+                    }
+                }, 50);
             }
         });
 
         final Button button3 = findViewById(R.id.choice3);
         button3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                Handler mHandler = new Handler();
                 checkAnswer("choice3");//Temporary for testing purposes, should call checkAnswer() instead
+                mHandler.postDelayed(new Runnable() {
+                    public void run() {
+                        Button rightAnswerView = (Button) findViewById( R.id.choice3);
+                        Log.d(TAG, "This should show up after 5 sec");
+                        rightAnswerView.setBackgroundColor(Color.WHITE);
+                        //rightAnswerView.setBackgroundColor(Color.WHITE);;
+                    }
+                }, 50);
+
             }
         });
+
 
     }
 
@@ -72,6 +105,7 @@ public class QuizActivity extends AppCompatActivity {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 if (dataSnapshot.exists()) {
 
                     //String v = dataSnapshot.child(key).child("question").getValue(String.class);
@@ -81,26 +115,29 @@ public class QuizActivity extends AppCompatActivity {
                     String answer = questionObj.child("answer").getValue(String.class);
                     Log.d(TAG, "This is before change(Answer): " + answer);
                     Log.d(TAG, "This is before change(User's choice): " + userChoice);
+                    int resID = getResources().getIdentifier(userChoice,
+                            "id", getPackageName());
+                    Button rightAnswerView = (Button) findViewById( resID );
                     if(userChoice.compareTo(answer) == 0)
                     {
-                        int resID = getResources().getIdentifier(userChoice,
-                                "id", getPackageName());
-                        Button rightAnswerView = (Button) findViewById( resID );
-                        rightAnswerView.setBackgroundColor(Color.parseColor("#ff00ddff"));
-                        //try{
-                        //    sleep(1000);
-                        //}
-                        //catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                         //   e.printStackTrace();
-                        //}
-                        rightAnswerView.setBackgroundColor(Color.parseColor("#ffffffff"));
+
+
+                        rightAnswerView.setBackgroundColor(Color.GREEN);
+
                         //Log.d(TAG, rightAnswerView.getText());
                         //Correct
                         addScore();
                     }else{
+                        rightAnswerView.setBackgroundColor(Color.RED);
                         //Incorrect
                         subtractLife();
+
+                        //Check if game is Over
+                        if(lives <= 0)
+                        {
+                            //TODO - store the current high score
+                            startActivity(new Intent(QuizActivity.this, GameOver.class));
+                        }
                     }
 
                     String newQuestion = getRandomQuestion();

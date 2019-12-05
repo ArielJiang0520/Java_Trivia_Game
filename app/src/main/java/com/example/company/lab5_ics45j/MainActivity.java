@@ -32,35 +32,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Write a message to the database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("questions");
 
-        //myRef.setValue("Hello, World!");
 
-        //Toast.makeText(this, "hello successfully added.", Toast.LENGTH_LONG).show();
-
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot childSnapshot: dataSnapshot.getChildren()) {
-                        String v = childSnapshot.child("question").getValue(String.class);
-                        if (v != null)
-                            Log.d(TAG, v);
-                        else
-                            Log.d(TAG, "value is NULL");
-                    }
-                }
-                else
-                    Log.d(TAG, "snapshot does not exist.");
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.");
-            }
-        });
 
     }
 }
