@@ -29,7 +29,14 @@ public class MainActivity extends AppCompatActivity {
         final Button startButton = findViewById(R.id.startButton);
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, QuizActivity.class));
+                //Get name
+                TextView usersName = (TextView) findViewById( R.id.editTextName);
+                String name = "" + usersName.getText();
+
+                Intent intent = new Intent(MainActivity.this, QuizActivity.class);
+                intent.putExtra("name", name);
+                startActivity(intent);
+                //startActivity(new Intent(MainActivity.this, QuizActivity.class));
             }
         });
 

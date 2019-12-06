@@ -16,4 +16,6 @@
     <string name="home">HOME</string>
     <string name="description">This is the temporary description. This is the temporary description This is the temporary description This is the temporary description This is the temporary description This is the temporary description</string>
     <string name="CurrentScore">Current Score</string>
+    <string name="defaultName">Steve</string>
+    <string name="nameHint">enter name</string>
 </resources>

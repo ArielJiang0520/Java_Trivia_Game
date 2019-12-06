@@ -45,15 +45,15 @@ public class GameOver extends AppCompatActivity {
 
         //Read highest score
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("highest score");
+        DatabaseReference myRef = database.getReference("userHighScore").child("userName");
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    int highestScore = dataSnapshot.getValue(Integer.class);
+                    String highestScore = dataSnapshot.getValue(String.class);
                     TextView scoreText = (TextView) findViewById( R.id.highestScore);
-                    scoreText.setText(Integer.toString(highestScore));
+                    scoreText.setText(highestScore);
                 }
                 else
                     Log.d(TAG, "snapshot does not exist.");

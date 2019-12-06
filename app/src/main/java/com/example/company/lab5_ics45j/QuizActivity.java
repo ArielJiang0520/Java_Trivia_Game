@@ -34,6 +34,7 @@ public class QuizActivity extends AppCompatActivity {
     String currentQuestionNum;
     ArrayList<Integer> questionArray =  new ArrayList<Integer>(30);;
     int counter = 30;
+    String name = "";
 
     //Need an answer variable that updates depending on question
 
@@ -46,6 +47,11 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        //Get name from last activity
+        Intent intent = getIntent();
+        name = intent.getStringExtra("name");
+
+        //First Question
         String newQuestion = getRandomQuestion();
         currentQuestionNum = newQuestion;
         getQuestion(newQuestion);
@@ -267,8 +273,6 @@ public class QuizActivity extends AppCompatActivity {
             ImageView life1 = (ImageView) findViewById( R.id.life0);
             life1.setVisibility(View.INVISIBLE);
             lives--;
-        }else{
-            //TODO, End the game
         }
     }
 
@@ -277,11 +281,21 @@ public class QuizActivity extends AppCompatActivity {
     {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("highest score");
+        DatabaseReference userHighScore = database.getReference("userHighScore").child("userName");
         TextView scoreView = (TextView) findViewById( R.id.textView2);
         score += 1;
         if (score > highestScore)
         {
             Toast.makeText(this, "You are beating your highest score!", Toast.LENGTH_SHORT).show();
+            //Delete current highest score
+            userHighScore.removeValue();
+
+            //Add new one with Name: score#
+            String newHigh = name + ": " + score;
+            DatabaseReference userHighScoreTemp = database.getReference("userHighScore");
+            userHighScoreTemp.child("userName").setValue(newHigh);
+
+            //Set new highest
             myRef.setValue(score);
         }
         scoreView.setText( Integer.toString(score));
