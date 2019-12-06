@@ -19,20 +19,29 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static java.lang.Thread.*;
+
 
 public class QuizActivity extends AppCompatActivity {
     private static final String TAG = "QuizActivity";
 
     int score = 0;
     int lives = 3;
+    int highestScore = 0;
     String currentQuestionNum;
+    ArrayList<Integer> questionArray =  new ArrayList<Integer>(30);;
+    int counter = 30;
+
     //Need an answer variable that updates depending on question
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        for (int i = 1; i < 31; i++)
+            questionArray.add(i);
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
@@ -41,7 +50,25 @@ public class QuizActivity extends AppCompatActivity {
         currentQuestionNum = newQuestion;
         getQuestion(newQuestion);
 
+        //Read highest score
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("highest score");
 
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    highestScore = dataSnapshot.getValue(Integer.class);
+                }
+                else
+                    Log.d(TAG, "snapshot does not exist.");
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.");
+            }
+        });
         final Button button1 = findViewById(R.id.choice1);
         button1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -50,7 +77,7 @@ public class QuizActivity extends AppCompatActivity {
                 mHandler.postDelayed(new Runnable() {
                     public void run() {
                         Button rightAnswerView = (Button) findViewById( R.id.choice1);
-                        Log.d(TAG, "This should show up after 5 sec");
+//                        Log.d(TAG, "This should show up after 5 sec");
                         rightAnswerView.setBackgroundColor(Color.WHITE);
                         //rightAnswerView.setBackgroundColor(Color.WHITE);;
                     }
@@ -66,7 +93,7 @@ public class QuizActivity extends AppCompatActivity {
                 mHandler.postDelayed(new Runnable() {
                     public void run() {
                         Button rightAnswerView = (Button) findViewById( R.id.choice2);
-                        Log.d(TAG, "This should show up after 5 sec");
+//                        Log.d(TAG, "This should show up after 5 sec");
                         rightAnswerView.setBackgroundColor(Color.WHITE);
                         //rightAnswerView.setBackgroundColor(Color.WHITE);;
                     }
@@ -82,7 +109,7 @@ public class QuizActivity extends AppCompatActivity {
                 mHandler.postDelayed(new Runnable() {
                     public void run() {
                         Button rightAnswerView = (Button) findViewById( R.id.choice3);
-                        Log.d(TAG, "This should show up after 5 sec");
+//                        Log.d(TAG, "This should show up after 5 sec");
                         rightAnswerView.setBackgroundColor(Color.WHITE);
                         //rightAnswerView.setBackgroundColor(Color.WHITE);;
                     }
@@ -127,7 +154,8 @@ public class QuizActivity extends AppCompatActivity {
                         //Log.d(TAG, rightAnswerView.getText());
                         //Correct
                         addScore();
-                    }else{
+                    }
+                    else{
                         rightAnswerView.setBackgroundColor(Color.RED);
                         //Incorrect
                         subtractLife();
@@ -135,8 +163,11 @@ public class QuizActivity extends AppCompatActivity {
                         //Check if game is Over
                         if(lives <= 0)
                         {
-                            //TODO - store the current high score
-                            startActivity(new Intent(QuizActivity.this, GameOver.class));
+                            //startActivity(new Intent(QuizActivity.this, GameOver.class));
+                            Intent intent = new Intent(QuizActivity.this, GameOver.class);
+                            intent.putExtra("currentScore", Integer.toString(score));
+                            intent.putExtra("end","You ran out of lives! Better luck next time!");
+                            startActivity(intent);
                         }
                     }
 
@@ -144,13 +175,6 @@ public class QuizActivity extends AppCompatActivity {
                     currentQuestionNum = newQuestion;
                     Log.d(TAG, "This is after change: " + currentQuestionNum);
                     getQuestion(newQuestion);
-
-
-
-                    /*if ( answer != null)
-                        Log.d(TAG, answer);
-                    else
-                        Log.d(TAG, "value is NULL");*/
 
                 }
                 else
@@ -166,12 +190,23 @@ public class QuizActivity extends AppCompatActivity {
 
     private String getRandomQuestion()
     {
-        //Get a random number from 1 - 30
-        Random rand = new Random();
-        int n = rand.nextInt(10);
-        n+=1;
-
-        return "question" + n;
+        //Get a random number from 30 - 1
+        if (counter != 0)
+        {
+            Random rand = new Random();
+            int random = rand.nextInt(counter--);
+            int n = questionArray.get(random);
+            questionArray.remove(random);
+            return "question" + n;
+        }
+        else
+        {
+            Intent intent = new Intent(QuizActivity.this, GameOver.class);
+            intent.putExtra("currentScore", Integer.toString(score));
+            intent.putExtra("end","You finished every question! Congrats!");
+            startActivity(intent);
+        }
+        return "";
     }
 
     //Get Question from database and choices from database
@@ -202,11 +237,6 @@ public class QuizActivity extends AppCompatActivity {
 
                     //Set buttons text
                     setQuestionText(c1, c2, c3);
-
-                    /*if ( c3!= null)
-                        Log.d(TAG, c3);
-                    else
-                        Log.d(TAG, "value is NULL");*/
 
                 }
                 else
@@ -245,8 +275,15 @@ public class QuizActivity extends AppCompatActivity {
     //Add one point to the current score
     private void addScore()
     {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("highest score");
         TextView scoreView = (TextView) findViewById( R.id.textView2);
         score += 1;
+        if (score > highestScore)
+        {
+            Toast.makeText(this, "You are beating your highest score!", Toast.LENGTH_SHORT).show();
+            myRef.setValue(score);
+        }
         scoreView.setText( Integer.toString(score));
     }
 
